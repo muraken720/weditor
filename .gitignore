@@ -1,0 +1,38 @@
+# Dependencies and caches
+node_modules/
+.npm-cache/
+.cache/
+
+# Local test output and working artifacts
+test-results/
+playwright-report/
+coverage/
+artifacts/
+/REVIEW.md
+
+# Only the standalone distribution belongs in Git
+dist/*
+!dist/weditor.html
+
+# Credentials and private environment configuration
+.env
+.env.*
+!.env.example
+.npmrc
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Editor, OS, and temporary files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+*.tsbuildinfo

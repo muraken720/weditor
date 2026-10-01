@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <!-- CSP -->
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>WEditor — ローカルテキストエディタ</title>
+    <!-- STYLES -->
+    <!-- LICENSES -->
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand" title="WEditor">
+        <span class="logo" aria-hidden="true">W</span
+        ><span class="brand-name">WEditor</span>
+      </div>
+      <nav class="toolbar" aria-label="エディタ操作">
+        <details class="menu" id="fileMenu">
+          <summary data-i18n="fileMenu">ファイル</summary>
+          <div class="menu-items">
+            <button id="newBtn">
+              <span data-i18n="new">新規</span
+              ><span class="shortcut">Ctrl+Alt+N</span>
+            </button>
+            <button id="openBtn">
+              <span data-i18n="open">開く</span
+              ><span class="shortcut">Ctrl+O</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button id="saveBtn">
+              <span data-i18n="save">保存</span
+              ><span class="shortcut">Ctrl+S</span>
+            </button>
+            <button id="saveAsBtn">
+              <span data-i18n="saveAs">名前を付けて保存</span
+              ><span class="shortcut">Ctrl+Shift+S</span>
+            </button>
+          </div>
+        </details>
+        <details class="menu" id="editMenu">
+          <summary data-i18n="editMenu">編集</summary>
+          <div class="menu-items">
+            <button id="undoBtn">
+              <span data-i18n="undo">元に戻す</span
+              ><span class="shortcut">Ctrl+Z</span>
+            </button>
+            <button id="redoBtn">
+              <span data-i18n="redo">やり直す</span
+              ><span class="shortcut">Ctrl+Y</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button id="findBtn">
+              <span data-i18n="find">検索・置換</span
+              ><span class="shortcut">Ctrl+F</span>
+            </button>
+          </div>
+        </details>
+        <details class="menu" id="viewMenu">
+          <summary data-i18n="viewMenu">表示</summary>
+          <div class="menu-items">
+            <button id="largerBtn">
+              <span data-i18n="larger">拡大</span
+              ><span class="shortcut">Ctrl+＋</span>
+            </button>
+            <button id="smallerBtn">
+              <span data-i18n="smaller">縮小</span
+              ><span class="shortcut">Ctrl+−</span>
+            </button>
+            <button id="resetZoomBtn">
+              <span data-i18n="resetZoom">標準に戻す</span
+              ><span class="shortcut">Ctrl+0</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button
+              id="themeLightBtn"
+              class="menu-choice"
+              data-theme-choice="light"
+              aria-pressed="false"
+            >
+              <span data-i18n="themeLight">テーマ：ライト</span>
+            </button>
+            <button
+              id="themeDarkBtn"
+              class="menu-choice"
+              data-theme-choice="dark"
+              aria-pressed="false"
+            >
+              <span data-i18n="themeDark">テーマ：ダーク</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button
+              id="languageJaBtn"
+              class="menu-choice"
+              data-language-choice="ja"
+              aria-pressed="false"
+            >
+              <span data-i18n="languageJa">言語：日本語</span>
+            </button>
+            <button
+              id="languageEnBtn"
+              class="menu-choice"
+              data-language-choice="en"
+              aria-pressed="false"
+            >
+              <span data-i18n="languageEn">言語：English</span>
+            </button>
+          </div>
+        </details>
+        <details class="menu" id="helpMenu">
+          <summary data-i18n="help">ヘルプ</summary>
+          <div class="menu-items">
+            <button id="shortcutsBtn" data-i18n="helpTitle">
+              キーボードショートカット
+            </button>
+            <button id="aboutBtn" data-i18n="aboutTitle">
+              WEditorについて
+            </button>
+          </div>
+        </details>
+      </nav>
+      <div class="spacer"></div>
+    </header>
+    <div id="tabs" class="tabs" role="tablist" aria-label="ファイル"></div>
+    <section id="searchBar" class="search" hidden aria-label="検索・置換">
+      <input
+        id="query"
+        maxlength="1000"
+        class="field"
+        type="text"
+        data-placeholder="searchPlaceholder"
+        placeholder="検索する文字列"
+        aria-label="検索する文字列"
+      /><span id="matchCount" class="count" aria-live="polite"></span
+      ><button id="prevBtn" data-i18n="prev">↑ 前</button
+      ><button id="nextBtn" data-i18n="next">↓ 次</button
+      ><label
+        ><input id="caseSensitive" type="checkbox" /><span data-i18n="case"
+          >大文字・小文字を区別</span
+        ></label
+      ><input
+        id="replacement"
+        maxlength="10000"
+        class="field"
+        type="text"
+        data-placeholder="replacePlaceholder"
+        placeholder="置換する文字列"
+        aria-label="置換する文字列"
+      /><button id="replaceBtn" data-i18n="replace">置換</button
+      ><button id="replaceAllBtn" data-i18n="replaceAll">すべて置換</button>
+      <div class="spacer"></div>
+      <button id="closeSearch" aria-label="検索を閉じる">✕</button>
+    </section>
+    <main class="workspace">
+      <div class="gutter" aria-hidden="true">
+        <div id="lineNumbers" class="gutter-inner"></div>
+      </div>
+      <div class="code-area" id="editorPanel" role="tabpanel">
+        <pre id="mirror" class="mirror" aria-hidden="true"></pre>
+        <textarea
+          id="editor"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          wrap="off"
+          aria-label="テキストエディタ"
+          placeholder="ここから書き始めましょう。ファイルをドラッグして開くこともできます。"
+        ></textarea>
+      </div>
+    </main>
+    <footer class="status">
+      <span id="position"></span><span id="length"></span>
+      <div class="spacer"></div>
+      <span id="encoding">UTF-8</span
+      ><button id="eolBtn" title="改行コード">LF</button>
+    </footer>
+    <input id="fileInput" type="file" multiple hidden />
+    <div id="toast" class="toast" role="status" hidden></div>
+    <dialog id="helpDialog" class="modal" aria-labelledby="helpTitle">
+      <h2 id="helpTitle" data-i18n="helpTitle">キーボードショートカット</h2>
+      <div id="helpKeys" class="keys"></div>
+      <p data-i18n="helpText">
+        HTMLファイルだけで動作します。ファイルはUTF-8で読み書きします。直接上書きに対応しないブラウザでは、保存時にダウンロードします。大切な内容はファイルに保存してください。
+      </p>
+      <footer>
+        <button id="closeHelp" class="primary" data-i18n="close">閉じる</button>
+      </footer>
+    </dialog>
+    <dialog id="aboutDialog" class="modal" aria-labelledby="aboutTitle">
+      <h2 id="aboutTitle" data-i18n="aboutTitle">WEditorについて</h2>
+      <div class="about-name">WEditor <span>__APP_VERSION__</span></div>
+      <p data-i18n="aboutText">
+        単一のHTMLでオフライン動作するテキストエディタ。ファイルの読み書きはUTF-8に対応しています。
+      </p>
+      <p data-i18n="supportedEncodings">
+        対応：UTF-8、Shift_JIS（CP932）、EUC-JP、ISO-2022-JP、UTF-16LE／BE（BOM付き）。
+      </p>
+      <p data-i18n="aboutLicense">
+        フォント：Noto Sans JP（SIL Open Font License 1.1）
+      </p>
+      <footer>
+        <button id="closeAbout" class="primary" data-i18n="close">
+          閉じる
+        </button>
+      </footer>
+    </dialog>
+    <dialog id="nameDialog" class="modal" aria-labelledby="saveAsTitle">
+      <form id="nameForm">
+        <h2 id="saveAsTitle" data-i18n="saveAs">名前を付けて保存</h2>
+        <input
+          id="fileName"
+          class="field full-width"
+          required
+          aria-label="ファイル名"
+        />
+        <footer>
+          <button type="button" id="cancelName" data-i18n="cancel">
+            キャンセル</button
+          ><button type="submit" class="primary" data-i18n="save">保存</button>
+        </footer>
+      </form>
+    </dialog>
+    <!-- APP -->
+  </body>
+</html>
