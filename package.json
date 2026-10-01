@@ -20,7 +20,7 @@
     "typescript": "7.0.2"
   },
   "dependencies": {
-    "encoding-japanese": "2.3.0"
+    "encoding-japanese": "2.4.0"
   },
   "description": "An offline text editor distributed as a single HTML file.",
   "license": "MIT",
